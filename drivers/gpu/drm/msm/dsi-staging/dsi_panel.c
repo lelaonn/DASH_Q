@@ -858,8 +858,8 @@ int dsi_panel_set_doze_backlight(struct dsi_display *display)
 
 	if (drm_dev->doze_brightness == DOZE_BRIGHTNESS_TO_NORMAL) {
 		if (panel->oled_panel_video_mode) {
-			if ((last_aod_hbm_status == DOZE_BRIGHTNESS_LBM && panel->last_bl_lvl <= panel->doze_lbm_brightness)
-				||(last_aod_hbm_status == DOZE_BRIGHTNESS_HBM && panel->last_bl_lvl <= panel->doze_hbm_brightness))
+			if ((last_aod_hbm_status == DOZE_BRIGHTNESS_LBM)
+				||(last_aod_hbm_status == DOZE_BRIGHTNESS_HBM))
 				schedule_delayed_work(&panel->nolp_bl_delay_work, msecs_to_jiffies(0));
 			else
 				schedule_delayed_work(&panel->nolp_bl_delay_work, msecs_to_jiffies(30));
@@ -869,8 +869,8 @@ int dsi_panel_set_doze_backlight(struct dsi_display *display)
 	if (drm_dev->doze_brightness == DOZE_BRIGHTNESS_LBM ||drm_dev->doze_brightness == DOZE_BRIGHTNESS_HBM)
 		last_aod_hbm_status  = drm_dev->doze_brightness;
 
-	if (drm_dev && ((panel->oled_panel_video_mode && drm_dev->doze_state == DRM_BLANK_UNBLANK)
-		||drm_dev->doze_state == DRM_BLANK_LP1 || drm_dev->doze_state == DRM_BLANK_LP2)) {
+	if (drm_dev && ((panel->oled_panel_video_mode && drm_dev->doze_state == MSM_DRM_BLANK_UNBLANK)
+		||drm_dev->doze_state == MSM_DRM_BLANK_LP1 || drm_dev->doze_state == MSM_DRM_BLANK_LP2)) {
 		if (panel->fod_hbm_enabled || panel->fod_dimlayer_hbm_enabled || panel->fod_backlight_flag) {
 			pr_info("%s FOD HBM open, skip set doze backlight at: [hbm=%d][dimlayer_fod=%d][fod_bl=%d]\n", __func__,
 			panel->fod_hbm_enabled, panel->fod_dimlayer_hbm_enabled, panel->fod_backlight_flag);
@@ -4048,22 +4048,11 @@ static int dsi_panel_parse_mi_config(struct dsi_panel *panel,
 		pr_info("oled panel video mode disabled..\n");
 	}
 
-	rc = of_property_read_u32(of_node,
-		"mi,mdss-dsi-doze-hbm-brightness-value", &panel->doze_hbm_brightness);
-	if (rc || panel->doze_hbm_brightness <= 0) {
-	pr_err("can't get doze hbm brightness\n");
-	}
-
-	rc = of_property_read_u32(of_node,
-		"mi,mdss-dsi-doze-lbm-brightness-value", &panel->doze_lbm_brightness);
-	if (rc || panel->doze_lbm_brightness <= 0) {
-		pr_err("can't get doze lbm brightness\n");
-	}
 
  	rc = of_property_read_u32(of_node,
-			"mi,mdss-dsi-panel-dc-threshold", &panel->dc_threshold);
+			"qcom,mdss-dsi-panel-dc-threshold", &panel->dc_threshold);
 	if (rc) {
-		panel->dc_threshold = 488;
+		panel->dc_threshold = 610;
 		pr_info("default dc backlight threshold is %d\n", panel->dc_threshold);
 	} else {
 		pr_info("dc backlight threshold %d \n", panel->dc_threshold);
@@ -5742,8 +5731,8 @@ int panel_disp_param_send_lock(struct dsi_panel *panel, int param)
 				display = container_of(host, struct dsi_display, host);
 
 			if (display->drm_dev
-				&& ((display->drm_dev->doze_state == DRM_BLANK_LP1)
-					|| (display->drm_dev->doze_state == DRM_BLANK_LP2))) {
+				&& ((display->drm_dev->doze_state == MSM_DRM_BLANK_LP1)
+					|| (display->drm_dev->doze_state == MSM_DRM_BLANK_LP2))) {
 #if 0
 				if (panel->last_bl_lvl > panel->doze_backlight_threshold) {
 					pr_info("hbm fod off DSI_CMD_SET_DOZE_HBM");
@@ -5940,8 +5929,8 @@ int panel_disp_param_send_lock(struct dsi_panel *panel, int param)
 			rc = dsi_panel_update_backlight(panel, panel->last_bl_lvl);
 
 			if (display->drm_dev
-				&& ((display->drm_dev->doze_state == DRM_BLANK_LP1)
-					|| (display->drm_dev->doze_state == DRM_BLANK_LP2))) {
+				&& ((display->drm_dev->doze_state == MSM_DRM_BLANK_LP1)
+					|| (display->drm_dev->doze_state == MSM_DRM_BLANK_LP2))) {
 #if 0
 				if (panel->last_bl_lvl > panel->doze_backlight_threshold) {
 					pr_info("FOD backlight restore DSI_CMD_SET_DOZE_HBM");
