@@ -125,3 +125,10 @@ all.config
 
 # fetched Android config fragments
 kernel/configs/android-*.cfg
+
+# Build files
+kernel.log
+/out-9TP
+/out
+buildC.sh
+buildR.sh
