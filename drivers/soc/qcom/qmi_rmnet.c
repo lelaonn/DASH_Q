@@ -17,6 +17,7 @@
 #include <linux/rtnetlink.h>
 #include <uapi/linux/rtnetlink.h>
 #include <net/pkt_sched.h>
+#include <net/tcp.h>
 #include "qmi_rmnet_i.h"
 #include <trace/events/dfc.h>
 #include <linux/module.h>
